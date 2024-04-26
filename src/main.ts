@@ -19,21 +19,21 @@ async function bootstrap() {
     .build()
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('/api/docs', app, document, {
-    swaggerOptions: {}
+    customJs: [
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
+    ],
+    customCssUrl: [
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.css',
+      'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css',
+    ],
   })
   app.enableCors({
     // TODO: change url
     origin: '*'
   })
   app.useGlobalPipes(new ValidationPipe())
-
-  if (process.env.NODE_ENV === 'development') {
-    const pathToSwaggerStaticFolder = resolve(process.cwd(), 'swagger-static');
-    const pathToSwaggerJson = resolve(pathToSwaggerStaticFolder, 'swagger.json');
-    const swaggerJson = JSON.stringify(document, null, 2);
-    writeFileSync(pathToSwaggerJson, swaggerJson);
-    console.log(`Swagger JSON file written to: '/swagger-static/swagger.json'`);
- }
 
   await app.listen(PORT, () => console.log(`Server started on port ${PORT}`))
 }
