@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
 export class ErrorDto {
-  @ApiProperty({ description: 'Erroorr message' })
+  @ApiProperty({ description: 'Error message' })
   message: string
 }

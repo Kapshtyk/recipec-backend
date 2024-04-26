@@ -25,15 +25,14 @@ export class AuthService {
   }
 
   async registration(dto: CreateUserDto): Promise<{ token: string }> {
-    // TODO: delete this
-    await this.userService.clear()
-    const candidate = await this.userService.getUserByEmail(dto.email)
+    const candidate = await this.userService.checkIfUserExists(dto.email, dto.username)
     if (candidate) {
       throw new HttpException(
-        'User with this email already exists',
+        'User with this email or username already exists',
         HttpStatus.BAD_REQUEST
       )
     }
+
     const hashPassword = await hash(dto.password, 5)
     const user = await this.userService.createUser({
       ...dto,

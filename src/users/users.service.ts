@@ -10,6 +10,7 @@ export class UsersService {
   constructor(@InjectModel(User.name) private userRepository: Model<User>) {}
 
   async createUser(dto: CreateUserDto): Promise<UserDocument> {
+    console.log(dto)
     const user = await this.userRepository.create(dto)
     return user
   }
@@ -32,6 +33,12 @@ export class UsersService {
   async getUserByEmail(email: string): Promise<UserDocument> {
     const user = await this.userRepository.findOne({ email })
     return user
+  }
+
+  async checkIfUserExists(email: string, username: string): Promise<boolean> {
+    const userByEmail = await this.userRepository.findOne({ email })
+    const userByUsername = await this.userRepository.findOne({ username })
+    return userByEmail || userByUsername ? true : false
   }
 
   async clear() {
