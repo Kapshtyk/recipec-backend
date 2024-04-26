@@ -23,6 +23,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: npm i
     - run: npm run build
     - name: Deploy to Vercel
       run: npx vercel --token ${VERCEL_TOKEN} --prod
