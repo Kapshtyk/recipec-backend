@@ -7,7 +7,7 @@ import {
 import { JwtService } from '@nestjs/jwt'
 import { compare, hash } from 'bcryptjs'
 import { CreateUserDto } from 'src/users/dto/create-user.dto'
-import { User, UserDocument } from 'src/users/schemas/users.schema'
+import { UserDocument } from 'src/users/schemas/users.schema'
 import { UsersService } from 'src/users/users.service'
 
 import { LoginUserDto } from './dto/login-user.dto'
@@ -24,7 +24,7 @@ export class AuthService {
     return this.generateToken(user)
   }
 
-  async registration(dto: CreateUserDto): Promise<{ token: string }> {
+  async registration(dto: CreateUserDto): Promise<UserDocument> {
     const candidate = await this.userService.checkIfUserExists(dto.email, dto.username)
     if (candidate) {
       throw new HttpException(
@@ -36,9 +36,10 @@ export class AuthService {
     const hashPassword = await hash(dto.password, 5)
     const user = await this.userService.createUser({
       ...dto,
-      password: hashPassword
+      password: hashPassword,
     })
-    return this.generateToken(user)
+    user.token = (await this.generateToken(user)).token
+    return user
   }
 
   async generateToken(user: UserDocument): Promise<{ token: string }> {

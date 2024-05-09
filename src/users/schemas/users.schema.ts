@@ -31,6 +31,8 @@ export class User {
     required: true
   })
   password: string
+
+  token?: string
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)
