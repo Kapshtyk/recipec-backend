@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 
 import { Model } from "mongoose";
+import { IRequestWithUser } from "src/auth/auth.guard";
 
 import { CreateUserDto } from "./dto/create-user.dto";
 import { User, UserDbShort, UserDbWithPassword } from "./schemas/users.schema";
@@ -26,6 +27,10 @@ export class UsersService {
       roles: 1,
     });
     return user;
+  }
+
+  async getMe(req: IRequestWithUser): Promise<UserDbShort> {
+    return this.getOneUser(req.user._id.toString());
   }
 
   async getAllUsers(): Promise<UserDbShort[]> {

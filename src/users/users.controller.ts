@@ -4,11 +4,12 @@ import {
   Get,
   HttpCode,
   Param,
+  Req,
   UseGuards,
 } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
-import { AuthGuard } from "../auth/auth.guard";
+import { AuthGuard, IRequestWithUser } from "../auth/auth.guard";
 
 import { UserDbShortDto } from "./schemas/users.schema";
 import { UsersService } from "./users.service";
@@ -17,6 +18,14 @@ import { UsersService } from "./users.service";
 @Controller("users")
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @ApiOperation({ summary: "Get current user" })
+  @ApiResponse({ status: 200, type: UserDbShortDto })
+  @UseGuards(AuthGuard)
+  @Get("me")
+  getMe(@Req() req: IRequestWithUser) {
+    return this.usersService.getMe(req);
+  }
 
   @ApiOperation({ summary: "Get user by id" })
   @ApiResponse({ status: 200, type: UserDbShortDto })

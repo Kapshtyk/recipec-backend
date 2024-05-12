@@ -90,6 +90,21 @@ describe("App (e2e)", () => {
       }),
     );
 
+    const me = await request(app.getHttpServer())
+      .get("/users/me")
+      .set("Authorization", `Bearer ${loginResponseBody.token}`)
+      .expect(200);
+
+    const meResponseBody = JSON.parse(me.text);
+
+    expect(meResponseBody).toEqual(
+      expect.objectContaining({
+        email: "test@example.com",
+        username: "testuser",
+        _id: usersResponseBody[0]._id,
+      }),
+    );
+
     await request(app.getHttpServer())
       .delete(`/users/${usersResponseBody[0]._id}`)
       .expect(401);

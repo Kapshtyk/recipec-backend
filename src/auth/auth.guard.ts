@@ -7,8 +7,13 @@ import {
 import { JwtService } from "@nestjs/jwt";
 
 import { Request } from "express";
+import { UserDocument } from "src/users/schemas/users.schema";
 
 import { UsersService } from "../users/users.service";
+
+export interface IRequestWithUser extends Request {
+  user?: UserDocument;
+}
 
 @Injectable()
 export class AuthGuard implements CanActivate {

@@ -11,19 +11,12 @@ import {
   UseGuards,
 } from "@nestjs/common";
 
-import { Request } from "express";
-
-import { AuthGuard } from "../auth/auth.guard";
+import { AuthGuard, IRequestWithUser } from "../auth/auth.guard";
 import { RolesGuard } from "../roles/roles.guard";
-import { UserDocument } from "../users/schemas/users.schema";
 
 import { CreateRecipeDto } from "./dto/create-recipe.dto";
 import { UpdateRecipeDto } from "./dto/update-recipe.dto";
 import { RecipesService } from "./recipes.service";
-
-interface IRequestWithUser extends Request {
-  user?: UserDocument;
-}
 
 @Controller("recipes")
 export class RecipesController {

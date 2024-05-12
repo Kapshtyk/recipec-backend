@@ -95,4 +95,24 @@ describe("UsersController", () => {
       expect(result).toEqual({ message: "User was deleted" });
     });
   });
+
+  describe("getMe", () => {
+    it("should call usersService.getMe and return the current user", async () => {
+      const user: UserDbShort = {
+        _id: new ObjectId("60d6c7e320f9b53d8c63ada5"),
+        email: "test@example.com",
+        username: "testuser",
+        roles: ["user"],
+      };
+
+      const req = { user };
+
+      jest.spyOn(usersService, "getMe").mockResolvedValue(user);
+
+      const result = await controller.getMe(req as any);
+
+      expect(usersService.getMe).toHaveBeenCalledWith(req);
+      expect(result).toEqual(user);
+    });
+  });
 });

@@ -82,6 +82,7 @@ describe("UsersService", () => {
         username: 1,
         email: 1,
         _id: 1,
+        roles: 1,
       });
       expect(result).toEqual(user);
     });
@@ -140,7 +141,7 @@ describe("UsersService", () => {
 
       expect(userModel.findOne).toHaveBeenCalledWith(
         { email },
-        { username: 1, email: 1, _id: 1, password: 1 },
+        { username: 1, email: 1, _id: 1, password: 1, roles: 1 },
       );
       expect(result).toEqual(user);
     });
@@ -170,6 +171,29 @@ describe("UsersService", () => {
       expect(resultByEmail).toBe(true);
       expect(resultByUsername).toBe(true);
       expect(resultByBoth).toBe(true);
+    });
+  });
+
+  describe("getMe", () => {
+    it("should return the current user", async () => {
+      const userId = "60d6c7e320f9b53d8c63ada5";
+      const user: UserDbShort = {
+        _id: new ObjectId(userId),
+        email: "text@example.com",
+        username: "testuser",
+        roles: ["user"],
+      };
+
+      const req = {
+        user,
+      };
+
+      jest.spyOn(service, "getOneUser").mockResolvedValue(user);
+
+      const result = await service.getMe(req as any);
+
+      expect(service.getOneUser).toHaveBeenCalledWith(userId);
+      expect(result).toEqual(user);
     });
   });
 });
