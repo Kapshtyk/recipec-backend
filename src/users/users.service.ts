@@ -23,6 +23,7 @@ export class UsersService {
       username: 1,
       email: 1,
       _id: 1,
+      roles: 1,
     });
     return user;
   }
@@ -30,7 +31,7 @@ export class UsersService {
   async getAllUsers(): Promise<UserDbShort[]> {
     const users = await this.userRepository.find(
       {},
-      { username: 1, email: 1, _id: 1 },
+      { username: 1, email: 1, _id: 1, roles: 1 },
     );
     return users;
   }
@@ -43,7 +44,7 @@ export class UsersService {
   async getUserByEmail(email: string): Promise<UserDbWithPassword> {
     const user = await this.userRepository.findOne(
       { email },
-      { username: 1, email: 1, _id: 1, password: 1 },
+      { username: 1, email: 1, _id: 1, password: 1, roles: 1 },
     );
     return user;
   }

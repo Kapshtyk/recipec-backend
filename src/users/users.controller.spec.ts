@@ -45,6 +45,7 @@ describe("UsersController", () => {
         _id: new ObjectId("60d6c7e320f9b53d8c63ada5"),
         email: "test@example.com",
         username: "testuser",
+        roles: ["user"],
       };
 
       jest.spyOn(usersService, "getOneUser").mockResolvedValue(user);
@@ -63,11 +64,13 @@ describe("UsersController", () => {
           _id: new ObjectId("60d6c7e320f9b53d8c63ada5"),
           email: "test1@example.com",
           username: "testuser1",
+          roles: ["user"],
         },
         {
           _id: new ObjectId("60d6c7e320f9b53d8c63ada4"),
           email: "test2@example.com",
           username: "testuser2",
+          roles: ["user"],
         },
       ];
       jest.spyOn(usersService, "getAllUsers").mockResolvedValue(users);

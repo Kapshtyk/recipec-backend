@@ -8,6 +8,7 @@ import { join } from "path";
 import { AuthModule } from "./auth/auth.module";
 import { IngredientsModule } from "./ingredients/ingredients.module";
 import { RecipesModule } from "./recipes/recipes.module";
+import { RolesModule } from "./roles/roles.module";
 import { UsersModule } from "./users/users.module";
 
 @Module({
@@ -27,6 +28,7 @@ import { UsersModule } from "./users/users.module";
     AuthModule,
     RecipesModule,
     IngredientsModule,
+    RolesModule,
   ],
 })
 export class AppModule {}

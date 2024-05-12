@@ -7,12 +7,14 @@ import {
   Patch,
   Post,
   Req,
+  SetMetadata,
   UseGuards,
 } from "@nestjs/common";
 
 import { Request } from "express";
 
 import { AuthGuard } from "../auth/auth.guard";
+import { RolesGuard } from "../roles/roles.guard";
 import { UserDocument } from "../users/schemas/users.schema";
 
 import { CreateRecipeDto } from "./dto/create-recipe.dto";
@@ -37,11 +39,17 @@ export class RecipesController {
   }
 
   @Get()
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
+  @SetMetadata("roles", ["admin"])
   findAll() {
     return this.recipesService.findAll();
   }
 
   @Get(":id")
+  @UseGuards(RolesGuard)
+  @UseGuards(AuthGuard)
+  @SetMetadata("roles", ["admin"])
   findOne(@Param("id") id: string) {
     return this.recipesService.findOne(id);
   }

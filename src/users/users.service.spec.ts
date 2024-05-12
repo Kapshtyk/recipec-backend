@@ -53,6 +53,7 @@ describe("UsersService", () => {
         _id: new ObjectId("60d6c7e320f9b53d8c63ada5"),
         email: createUserDto.email,
         username: createUserDto.username,
+        roles: ["user"],
       };
       jest.spyOn(userModel, "create").mockResolvedValue(createdUser as any);
       jest.spyOn(service, "getOneUser").mockResolvedValue(createdUser);
@@ -71,6 +72,7 @@ describe("UsersService", () => {
         _id: new ObjectId(userId),
         email: "test@example.com",
         username: "testuser",
+        roles: ["user"],
       };
       jest.spyOn(userModel, "findById").mockResolvedValue(user);
 
@@ -92,11 +94,13 @@ describe("UsersService", () => {
           _id: new ObjectId("60d6c7e320f9b53d8c63ada5"),
           email: "test1@example.com",
           username: "testuser1",
+          roles: ["user"],
         },
         {
           _id: new ObjectId("60d6c7e320f9b53d8c63ada4"),
           email: "test2@example.com",
           username: "testuser2",
+          roles: ["user"],
         },
       ];
       jest.spyOn(userModel, "find").mockResolvedValue(users);
@@ -128,6 +132,7 @@ describe("UsersService", () => {
         email,
         username: "testuser",
         password: "password123",
+        roles: ["user"],
       };
       jest.spyOn(userModel, "findOne").mockResolvedValue(user);
 
@@ -149,6 +154,7 @@ describe("UsersService", () => {
         _id: new ObjectId("60d6c7e320f9b53d8c63ada5"),
         email: "test@example.com",
         username: "testuser",
+        roles: ["user"],
       };
       jest.spyOn(userModel, "findOne").mockResolvedValue(user);
 

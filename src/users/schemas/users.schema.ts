@@ -12,6 +12,8 @@ export class UserDbShortDto {
   username: string;
   @ApiProperty({ example: "email@gmail.com", description: "Email" })
   email: string;
+  @ApiProperty({ example: ["user"], description: "Roles" })
+  roles: string[];
 }
 
 @Schema()
@@ -39,9 +41,18 @@ export class User {
     select: false,
   })
   password: string;
+
+  @Prop({
+    default: ["user"],
+    type: [String],
+  })
+  roles: string[];
 }
 
-export type UserDbShort = Pick<UserDocument, "_id" | "username" | "email">;
+export type UserDbShort = Pick<
+  UserDocument,
+  "_id" | "username" | "email" | "roles"
+>;
 export type UserDbWithPassword = UserDbShort & { password: string };
 
 export const UserSchema = SchemaFactory.createForClass(User);
