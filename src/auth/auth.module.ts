@@ -1,13 +1,14 @@
-import { Module } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
-import { JwtModule } from '@nestjs/jwt'
-import { MongooseModule } from '@nestjs/mongoose'
-import { User, UserSchema } from 'src/users/schemas/users.schema'
-import { UsersModule } from 'src/users/users.module'
-import { UsersService } from 'src/users/users.service'
+import { Module } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtModule } from "@nestjs/jwt";
+import { MongooseModule } from "@nestjs/mongoose";
 
-import { AuthController } from './auth.controller'
-import { AuthService } from './auth.service'
+import { UserDb, UserSchema } from "../users/schemas/users.schema";
+import { UsersModule } from "../users/users.module";
+import { UsersService } from "../users/users.service";
+
+import { AuthController } from "./auth.controller";
+import { AuthService } from "./auth.service";
 
 @Module({
   controllers: [AuthController],
@@ -15,15 +16,15 @@ import { AuthService } from './auth.service'
   imports: [
     UsersModule,
     JwtModule.registerAsync({
-      useFactory: (configService: ConfigService) => {
+      useFactory: () => {
         return {
           secret: process.env.JWT_SECRET,
-          signOptions: { expiresIn: '12h' }
-        }
+          signOptions: { expiresIn: "12h" },
+        };
       },
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
-  ]
+    MongooseModule.forFeature([{ name: UserDb.name, schema: UserSchema }]),
+  ],
 })
 export class AuthModule {}

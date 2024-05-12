@@ -1,67 +1,82 @@
 import {
-  HttpException,
-  HttpStatus,
+  BadRequestException,
   Injectable,
-  UnauthorizedException
-} from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { compare, hash } from 'bcryptjs'
-import { CreateUserDto } from 'src/users/dto/create-user.dto'
-import { UserDocument } from 'src/users/schemas/users.schema'
-import { UsersService } from 'src/users/users.service'
+  UnauthorizedException,
+} from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
 
-import { LoginUserDto } from './dto/login-user.dto'
+import { compare, hash } from "bcryptjs";
+
+import { CreateUserDto } from "../users/dto/create-user.dto";
+import { UserDbShort, UserDbWithPassword } from "../users/schemas/users.schema";
+import { UsersService } from "../users/users.service";
+
+import { LoginUserDto } from "./dto/login-user.dto";
+import { TokenDto } from "./dto/token.dto";
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UsersService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
-  async login(dto: LoginUserDto) {
-    const user = await this.validateUser(dto)
-    return this.generateToken(user)
-  }
+  async login(userDto: LoginUserDto): Promise<TokenDto> {
+    const user = await this.validateUser(userDto);
 
-  async registration(dto: CreateUserDto): Promise<UserDocument> {
-    const candidate = await this.userService.checkIfUserExists(dto.email, dto.username)
-    if (candidate) {
-      throw new HttpException(
-        'User with this email or username already exists',
-        HttpStatus.BAD_REQUEST
-      )
+    if (!user) {
+      throw new UnauthorizedException(
+        "User with this email or password does not exist",
+      );
     }
 
-    const hashPassword = await hash(dto.password, 5)
+    return this.generateToken(user);
+  }
+
+  async registration(dto: CreateUserDto): Promise<TokenDto> {
+    const candidate = await this.userService.checkIfUserExists(
+      dto.email,
+      dto.username,
+    );
+    if (candidate) {
+      throw new BadRequestException(
+        "User with this email or username already exists",
+      );
+    }
+
+    const hashPassword = await hash(dto.password, 5);
     const user = await this.userService.createUser({
       ...dto,
       password: hashPassword,
-    })
-    user.token = (await this.generateToken(user)).token
-    return user
+    });
+    const token = this.generateToken(user).token;
+    return { token };
   }
 
-  async generateToken(user: UserDocument): Promise<{ token: string }> {
-    const payload = { email: user.email, username: user.username, id: user._id }
+  generateToken(user: UserDbShort): TokenDto {
+    const payload = {
+      email: user.email,
+      username: user.username,
+      id: user._id,
+    };
     return {
-      token: this.jwtService.sign(payload)
-    }
+      token: this.jwtService.sign(payload),
+    };
   }
 
-  private async validateUser(dto: LoginUserDto): Promise<UserDocument> {
-    const user = await this.userService.getUserByEmail(dto.email)
+  private async validateUser(dto: LoginUserDto): Promise<UserDbWithPassword> {
+    const user = await this.userService.getUserByEmail(dto.email);
     if (!user) {
       throw new UnauthorizedException({
-        message: 'Incorrect email or password'
-      })
+        message: "Incorrect email",
+      });
     }
-    const passwordEquals = await compare(dto.password, user.password)
-    if (user && passwordEquals) {
-      return user
+    const passwordEquals = await compare(dto.password, user.password);
+    if (!passwordEquals) {
+      throw new UnauthorizedException({
+        message: "Incorrect password",
+      });
     }
-    throw new UnauthorizedException({
-      message: 'Incorrect email or password'
-    })
+    return user;
   }
 }

@@ -1,6 +1,6 @@
-import { Ingredient } from 'src/ingredients/schemas/ingredient.schema'
+import { Ingredient } from "src/ingredients/schemas/ingredient.schema";
 
 export class AddIngredientsToRecipeDto {
-  ingredient: Ingredient
-  quantity: number
+  ingredient: Ingredient;
+  quantity: number;
 }

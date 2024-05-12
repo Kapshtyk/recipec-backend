@@ -1,4 +1,4 @@
 export class CreateIngredientDto {
-  name: string
-  units: string
+  name: string;
+  units: string;
 }

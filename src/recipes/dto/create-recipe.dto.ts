@@ -1,14 +1,14 @@
 export class CreateRecipeDto {
-  title: string
-  origin: string
-  description: string
-  instructions: string
-  image: string
+  title: string;
+  origin: string;
+  description: string;
+  instructions: string;
+  image: string;
   ingredients: [
     {
-      name: string
-      units: string
-      quantity: number
-    }
-  ]
+      name: string;
+      units: string;
+      quantity: number;
+    },
+  ];
 }

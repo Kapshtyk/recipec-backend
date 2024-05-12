@@ -1,27 +1,29 @@
 import {
   Injectable,
   NotFoundException,
-  UnauthorizedException
-} from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
-import { IngredientsService } from 'src/ingredients/ingredients.service'
+  UnauthorizedException,
+} from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+
+import { Model } from "mongoose";
+
+import { IngredientsService } from "../ingredients/ingredients.service";
 import {
   Ingredient,
-  IngredientDocument
-} from 'src/ingredients/schemas/ingredient.schema'
-import { UserDocument } from 'src/users/schemas/users.schema'
+  IngredientDocument,
+} from "../ingredients/schemas/ingredient.schema";
+import { UserDocument } from "../users/schemas/users.schema";
 
-import { CreateRecipeIngredientDto } from './dto/create-recipe-ingredient.dto'
-import { CreateRecipeDto } from './dto/create-recipe.dto'
-import { UpdateRecipeDto } from './dto/update-recipe.dto'
-import { IngredientRecipesService } from './ingredients-recipe.service'
-import { IngredientRecipeDocument } from './schemas/ingredient-recipe.schema'
-import { Recipe, RecipeDocument } from './schemas/recipe.schema'
+import { CreateRecipeDto } from "./dto/create-recipe.dto";
+import { CreateRecipeIngredientDto } from "./dto/create-recipe-ingredient.dto";
+import { UpdateRecipeDto } from "./dto/update-recipe.dto";
+import { IngredientRecipeDocument } from "./schemas/ingredient-recipe.schema";
+import { Recipe, RecipeDocument } from "./schemas/recipe.schema";
+import { IngredientRecipesService } from "./ingredients-recipe.service";
 
 interface IRecipeIngredients {
-  ingredient: IngredientDocument
-  quantity: number
+  ingredient: IngredientDocument;
+  quantity: number;
 }
 
 @Injectable()
@@ -31,12 +33,12 @@ export class RecipesService {
     @InjectModel(Ingredient.name)
     private recipeRepository: Model<Recipe>,
     private ingredientsService: IngredientsService,
-    private ingredientRecipeService: IngredientRecipesService
+    private ingredientRecipeService: IngredientRecipesService,
   ) {}
 
   async createRecipe(
     createRecipeDto: CreateRecipeDto,
-    user: UserDocument
+    user: UserDocument,
   ): Promise<RecipeDocument> {
     const recipe = await this.recipeRepository.create({
       title: createRecipeDto.title,
@@ -44,166 +46,166 @@ export class RecipesService {
       origin: createRecipeDto.origin,
       instructions: createRecipeDto.instructions,
       image: createRecipeDto.image,
-      author: user._id
-    })
+      author: user._id,
+    });
     const updatedIngredients = await this.addIngredientsToDatabase(
-      createRecipeDto.ingredients
-    )
+      createRecipeDto.ingredients,
+    );
     const ingredientsRecipe = await this.addIngredientsToRecipe(
       recipe,
-      updatedIngredients
-    )
+      updatedIngredients,
+    );
     recipe.set(
-      'ingredients',
-      ingredientsRecipe.map((ingredient) => ingredient._id)
-    )
-    await recipe.save()
-    return recipe
+      "ingredients",
+      ingredientsRecipe.map((ingredient) => ingredient._id),
+    );
+    await recipe.save();
+    return recipe;
   }
 
-  findAll(): Promise<RecipeDocument[]> {
+  async findAll(): Promise<RecipeDocument[]> {
     const recipes = this.recipeRepository
       .find()
       .populate({
-        path: 'ingredients',
+        path: "ingredients",
         populate: [
-          { path: 'ingredient', model: 'Ingredient', select: 'name units' }
-        ]
+          { path: "ingredient", model: "Ingredient", select: "name units" },
+        ],
       })
-      .populate('author', 'username email')
-      .exec()
-    return recipes
+      .populate("author", "username email")
+      .exec();
+    return recipes;
   }
 
-  findOne(id: string): Promise<RecipeDocument> {
-    const recipe = this.recipeRepository
+  async findOne(id: string): Promise<RecipeDocument> {
+    const recipe = await this.recipeRepository
       .findById(id)
       .populate({
-        path: 'ingredients',
+        path: "ingredients",
         populate: [
-          { path: 'ingredient', model: 'Ingredient', select: 'name units' }
-        ]
+          { path: "ingredient", model: "Ingredient", select: "name units" },
+        ],
       })
-      .populate('author', 'username email')
-      .exec()
+      .populate("author", "username email")
+      .exec();
 
     if (!recipe) {
-      throw new NotFoundException(`Recipe with id ${id} not found`)
+      throw new NotFoundException(`Recipe with id ${id} not found`);
     }
 
-    return recipe
+    return recipe;
   }
 
   async updateRecipe(
     id: string,
     updateRecipeDto: UpdateRecipeDto,
-    user: UserDocument
+    user: UserDocument,
   ) {
-    const recipe = await this.recipeRepository.findById(id)
+    const recipe = await this.recipeRepository.findById(id);
     if (!recipe) {
-      throw new NotFoundException(`Recipe with id ${id} not found`)
+      throw new NotFoundException(`Recipe with id ${id} not found`);
     }
 
     if (recipe.author.toString() !== user._id.toString()) {
       throw new UnauthorizedException(
-        `User with id ${user._id} is not the author of recipe with id ${id}`
-      )
+        `User with id ${user._id} is not the author of recipe with id ${id}`,
+      );
     }
 
-    let updatedRepice
+    let updatedRepice;
 
     if (updateRecipeDto.ingredients) {
-      await this.ingredientRecipeService.removeIngredientRecipeByRecipe(recipe)
+      await this.ingredientRecipeService.removeIngredientRecipeByRecipe(recipe);
 
       const updatedIngredients = await this.addIngredientsToDatabase(
-        updateRecipeDto.ingredients
-      )
+        updateRecipeDto.ingredients,
+      );
 
       const updatedIngredientsRecipes = await this.addIngredientsToRecipe(
         recipe,
-        updatedIngredients
-      )
+        updatedIngredients,
+      );
 
       updatedRepice = await this.recipeRepository.findByIdAndUpdate(id, {
         ...updateRecipeDto,
         ingredients: updatedIngredientsRecipes.map(
-          (ingredient) => ingredient._id
-        )
-      })
+          (ingredient) => ingredient._id,
+        ),
+      });
     } else {
       updatedRepice = await this.recipeRepository.findByIdAndUpdate(
         id,
-        updateRecipeDto
-      )
+        updateRecipeDto,
+      );
     }
-    return updatedRepice
+    return updatedRepice;
   }
 
   async removeRecipe(id: string, user: UserDocument) {
-    const recipe = await this.recipeRepository.findById(id)
+    const recipe = await this.recipeRepository.findById(id);
     if (!recipe) {
-      throw new NotFoundException(`Recipe with id ${id} not found`)
+      throw new NotFoundException(`Recipe with id ${id} not found`);
     }
 
     if (recipe.author.toString() !== user._id.toString()) {
       throw new UnauthorizedException(
-        `User with id ${user._id} is not the author of recipe with id ${id}`
-      )
+        `User with id ${user._id} is not the author of recipe with id ${id}`,
+      );
     }
-    await this.recipeRepository.findByIdAndDelete(id)
-    await this.ingredientRecipeService.removeIngredientRecipeByRecipe(recipe)
+    await this.recipeRepository.findByIdAndDelete(id);
+    await this.ingredientRecipeService.removeIngredientRecipeByRecipe(recipe);
 
-    return { message: `Recipe with id ${id} deleted` }
+    return { message: `Recipe with id ${id} deleted` };
   }
 
   private async addIngredientsToDatabase(
-    ingredients: CreateRecipeIngredientDto[]
+    ingredients: CreateRecipeIngredientDto[],
   ): Promise<IRecipeIngredients[]> {
-    const updatedIngredients = []
+    const updatedIngredients = [];
     for (const ingredient of ingredients) {
       const existingIngredient =
         await this.ingredientsService.findIngredientByNameAndUnits(
           ingredient.name,
-          ingredient.units
-        )
+          ingredient.units,
+        );
 
       if (existingIngredient) {
         updatedIngredients.push({
           ingredient: existingIngredient,
-          quantity: ingredient.quantity
-        })
+          quantity: ingredient.quantity,
+        });
       } else {
         const newIngredient = await this.ingredientsService.createIngredient({
           name: ingredient.name,
-          units: ingredient.units
-        })
+          units: ingredient.units,
+        });
         updatedIngredients.push({
           ingredient: newIngredient,
-          quantity: ingredient.quantity
-        })
+          quantity: ingredient.quantity,
+        });
       }
     }
-    return updatedIngredients
+    return updatedIngredients;
   }
 
   private async addIngredientsToRecipe(
     recipe: RecipeDocument,
-    ingredients: IRecipeIngredients[]
+    ingredients: IRecipeIngredients[],
   ): Promise<IngredientRecipeDocument[]> {
-    const addedIngredient = []
-    const ingredientRecipes = []
+    const addedIngredient = [];
+    const ingredientRecipes = [];
     for (const ingredient of ingredients) {
       if (addedIngredient.includes(ingredient.ingredient.id)) {
-        continue
+        continue;
       }
       const ingredientRecipe =
         await this.ingredientRecipeService.createIngredientRecipe(
           ingredient,
-          recipe
-        )
-      ingredientRecipes.push(ingredientRecipe)
-      addedIngredient.push(ingredient.ingredient.id)
+          recipe,
+        );
+      ingredientRecipes.push(ingredientRecipe);
+      addedIngredient.push(ingredient.ingredient.id);
     }
-    return ingredientRecipes
+    return ingredientRecipes;
   }
 }

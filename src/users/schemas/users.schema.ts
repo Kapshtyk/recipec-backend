@@ -1,38 +1,47 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { ApiProperty } from '@nestjs/swagger'
-import { HydratedDocument } from 'mongoose'
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { ApiProperty } from "@nestjs/swagger";
 
-export type UserDocument = HydratedDocument<User>
+import { HydratedDocument, ObjectId } from "mongoose";
+
+export type UserDocument = HydratedDocument<UserDb>;
+
+export class User {
+  @ApiProperty({ example: "123456", description: "Id" })
+  _id: ObjectId;
+  @ApiProperty({ example: "user", description: "Username" })
+  username: string;
+  @ApiProperty({ example: "email@gmail.com", description: "Email" })
+  email: string;
+}
 
 @Schema()
-export class User {
-  @ApiProperty({ example: 'user', description: 'Username' })
+export class UserDb {
   @Prop({
     required: true,
     unique: true,
     minlength: 3,
-    maxlength: 20
+    maxlength: 20,
   })
-  username: string
+  username: string;
 
-  @ApiProperty({ example: 'email@gmail.com', description: 'Email' })
   @Prop({
     required: true,
     unique: true,
     validate: {
       validator: (value) => /\S+@\S+\.\S+/.test(value),
-      message: 'Invalid email format'
-    }
+      message: "Invalid email format",
+    },
   })
-  email: string
+  email: string;
 
-  @ApiProperty({ example: '123456', description: 'Password' })
   @Prop({
-    required: true
+    required: true,
+    select: false,
   })
-  password: string
-
-  token?: string
+  password: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User)
+export type UserDbShort = Pick<UserDocument, "_id" | "username" | "email">;
+export type UserDbWithPassword = UserDbShort & { password: string };
+
+export const UserSchema = SchemaFactory.createForClass(UserDb);
