@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { UserDb, UserSchema } from "./schemas/users.schema";
+import { User, UserSchema } from "./schemas/users.schema";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
 
@@ -11,7 +11,7 @@ import { UsersService } from "./users.service";
   controllers: [UsersController],
   providers: [UsersService],
   imports: [
-    MongooseModule.forFeature([{ name: UserDb.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.registerAsync({
       useFactory: () => {
         return {

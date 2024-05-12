@@ -3,9 +3,9 @@ import { ApiProperty } from "@nestjs/swagger";
 
 import { HydratedDocument, ObjectId } from "mongoose";
 
-export type UserDocument = HydratedDocument<UserDb>;
+export type UserDocument = HydratedDocument<User>;
 
-export class User {
+export class UserDbShortDto {
   @ApiProperty({ example: "123456", description: "Id" })
   _id: ObjectId;
   @ApiProperty({ example: "user", description: "Username" })
@@ -15,7 +15,7 @@ export class User {
 }
 
 @Schema()
-export class UserDb {
+export class User {
   @Prop({
     required: true,
     unique: true,
@@ -44,4 +44,4 @@ export class UserDb {
 export type UserDbShort = Pick<UserDocument, "_id" | "username" | "email">;
 export type UserDbWithPassword = UserDbShort & { password: string };
 
-export const UserSchema = SchemaFactory.createForClass(UserDb);
+export const UserSchema = SchemaFactory.createForClass(User);

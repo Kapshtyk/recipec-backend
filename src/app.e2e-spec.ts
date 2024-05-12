@@ -25,7 +25,7 @@ describe("App (e2e)", () => {
   });
 
   beforeEach(async () => {
-    await db.collection("userdbs").deleteMany({});
+    await db.collection("users").deleteMany({});
   });
 
   it("registration pipeline (POST)", async () => {

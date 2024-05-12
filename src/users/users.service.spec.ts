@@ -8,7 +8,7 @@ import { Model } from "mongoose";
 
 import { CreateUserDto } from "./dto/create-user.dto";
 import {
-  UserDb,
+  User,
   UserDbShort,
   UserDbWithPassword,
   UserDocument,
@@ -26,7 +26,7 @@ describe("UsersService", () => {
       providers: [
         UsersService,
         {
-          provide: getModelToken(UserDb.name),
+          provide: getModelToken(User.name),
           useValue: {
             create: jest.fn(),
             findById: jest.fn(),
@@ -39,7 +39,7 @@ describe("UsersService", () => {
     }).compile();
 
     service = module.get<UsersService>(UsersService);
-    userModel = module.get<Model<UserDocument>>(getModelToken(UserDb.name));
+    userModel = module.get<Model<UserDocument>>(getModelToken(User.name));
   });
 
   describe("createUser", () => {

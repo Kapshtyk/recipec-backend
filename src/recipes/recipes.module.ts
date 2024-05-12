@@ -8,7 +8,7 @@ import {
   Ingredient,
   IngredientSchema,
 } from "../ingredients/schemas/ingredient.schema";
-import { UserDb, UserSchema } from "../users/schemas/users.schema";
+import { User, UserSchema } from "../users/schemas/users.schema";
 import { UsersService } from "../users/users.service";
 
 import {
@@ -32,7 +32,7 @@ import { RecipesService } from "./recipes.service";
     MongooseModule.forFeature([
       { name: IngredientRecipe.name, schema: IngredientRecipeSchema },
     ]),
-    MongooseModule.forFeature([{ name: UserDb.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     JwtModule.registerAsync({
       useFactory: () => {
         return {

@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { MongooseModule } from "@nestjs/mongoose";
 
-import { UserDb, UserSchema } from "../users/schemas/users.schema";
+import { User, UserSchema } from "../users/schemas/users.schema";
 import { UsersModule } from "../users/users.module";
 import { UsersService } from "../users/users.service";
 
@@ -24,7 +24,7 @@ import { AuthService } from "./auth.service";
       },
       inject: [ConfigService],
     }),
-    MongooseModule.forFeature([{ name: UserDb.name, schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
 })
 export class AuthModule {}

@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb";
 
 import { AuthService } from "../auth/auth.service";
 
-import { UserDb, UserDbShort } from "./schemas/users.schema";
+import { User, UserDbShort } from "./schemas/users.schema";
 import { UsersController } from "./users.controller";
 import { UsersService } from "./users.service";
 
@@ -23,7 +23,7 @@ describe("UsersController", () => {
         AuthService,
         JwtService,
         {
-          provide: getModelToken(UserDb.name),
+          provide: getModelToken(User.name),
           useValue: {
             findById: jest.fn(),
             find: jest.fn(),
