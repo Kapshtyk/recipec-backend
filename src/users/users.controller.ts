@@ -10,7 +10,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 import { AuthGuard } from "../auth/auth.guard";
 
-import { User } from "./schemas/users.schema";
+import { UserDbShortDto } from "./schemas/users.schema";
 import { UsersService } from "./users.service";
 
 @ApiTags("Users")
@@ -19,14 +19,14 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @ApiOperation({ summary: "Get user by id" })
-  @ApiResponse({ status: 200, type: User })
+  @ApiResponse({ status: 200, type: UserDbShortDto })
   @Get(":id")
   getOne(@Param("id") id: string) {
     return this.usersService.getOneUser(id);
   }
 
   @ApiOperation({ summary: "Get all users" })
-  @ApiResponse({ status: 200, type: [User] })
+  @ApiResponse({ status: 200, type: [UserDbShortDto] })
   @Get()
   getAll() {
     return this.usersService.getAllUsers();
